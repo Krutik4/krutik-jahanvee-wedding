@@ -1,4 +1,4 @@
-# Krutik & Jahanvee — cinematic wedding invitation
+# Krutik & Jahanvee — cinematic wedding invitation v1
 
 ## Local development
 
