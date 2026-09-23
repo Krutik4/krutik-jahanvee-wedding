@@ -8,6 +8,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
+        # Node 24 is the supported runtime on GitHub-hosted runners.
+        # Do not enable npm caching until this repository has a committed lockfile.
         with: { node-version: 24 }
       - run: npm install
       - run: npm run build

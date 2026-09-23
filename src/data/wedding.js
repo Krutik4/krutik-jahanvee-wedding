@@ -1,16 +1,50 @@
+/**
+ * Invitation content lives here. Update an event without changing UI code.
+ * `location.url` may be any Google Maps or venue URL.
+ */
 export const wedding = {
-  couple: 'Krutik & Jahanvee', groom: 'Krutik', bride: 'Jahanvee', invocation: 'શ્રી ગણેશાય નમઃ',
-  date: '2026-12-11T18:30:00+05:30', dateLabel: '11 December 2026', muhurat: '6:30 PM onwards',
-  location: { venue: 'The Celebration Courtyard', address: 'Gujarat, India', map: 'https://maps.google.com/?q=Gujarat,India' },
+  couple: 'Krutik & Jahanvee',
+  groom: 'Krutik',
+  bride: 'Jahanvee',
+  invocation: 'શ્રી ગણેશાય નમઃ',
+  date: '2026-12-11T18:30:00+05:30',
+  dateLabel: '11 December 2026',
+  muhurat: '6:30 PM onwards',
+  location: {
+    name: 'Blue Bell Lawn',
+    address: 'Ghodbunder Road, Thane',
+    url: 'https://www.google.com/maps/search/?api=1&query=Blue+Bell+Lawn%2C+Ghodbunder+Road%2C+Thane',
+  },
   rsvp: { whatsapp: 'https://wa.me/?text=We%20would%20love%20to%20celebrate%20with%20Krutik%20%26%20Jahanvee!', form: '' },
   music: '/assets/audio/wedding-melody.mp3',
-  gallery: [
-    { title: 'A quiet promise', tone: 'sunset' }, { title: 'In bloom', tone: 'rose' }, { title: 'Our beginning', tone: 'gold' }
-  ],
   events: [
-    { name: 'Jawera', gujarati: 'જવેરા', date: '07', month: 'December 2026', day: 'Monday', time: 'To be announced', venue: 'Family residence', address: 'Gujarat, India', map: 'https://maps.google.com/?q=Gujarat,India', description: 'An intimate beginning with blessings from those we hold close.', dress: 'Traditional elegance' },
-    { name: 'Ganesh Puja · Grah Shanti · Haldi', gujarati: 'ગણેશ પૂજા · હળદી', date: '09', month: 'December 2026', day: 'Wednesday', time: 'To be announced', venue: 'Family residence', address: 'Gujarat, India', map: 'https://maps.google.com/?q=Gujarat,India', description: 'Prayer, turmeric, laughter and the warmth of home.', dress: 'Shades of yellow' },
-    { name: 'Sangeet', gujarati: 'સંગીત', date: '10', month: 'December 2026', day: 'Thursday', time: 'To be announced', venue: 'The Celebration Courtyard', address: 'Gujarat, India', map: 'https://maps.google.com/?q=Gujarat,India', description: 'A luminous evening of music, stories and joyful dance.', dress: 'Festive jewel tones' },
-    { name: 'Wedding', gujarati: 'લગ્ન', date: '11', month: 'December 2026', day: 'Friday', time: '6:30 PM onwards', venue: 'The Celebration Courtyard', address: 'Gujarat, India', map: 'https://maps.google.com/?q=Gujarat,India', description: 'Join us beneath the mandap as two journeys become one.', dress: 'Indian formal' }
-  ]
+    {
+      name: 'Ganesh Puja · Grah Shanti', gujarati: 'ગણેશ પૂજા · ગૃહ શાંતિ',
+      date: '2026-12-09', day: 'Wednesday', displayDate: '09 December 2026',
+      time: 'To be announced',
+      location: { name: 'My Residence', address: 'MICL Aaradhya Eastwind, Vikhroli East, Mumbai', url: 'https://www.google.com/maps/search/?api=1&query=MICL+Aaradhya+Eastwind%2C+Vikhroli+East%2C+Mumbai' },
+      description: 'Prayer and blessings for a peaceful beginning.', dressCode: 'Traditional elegance',
+    },
+    {
+      name: 'Haldi', gujarati: 'હળદી',
+      date: '2026-12-09', day: 'Wednesday', displayDate: '09 December 2026',
+      time: 'To be announced',
+      location: { name: 'My Residence', address: 'MICL Aaradhya Eastwind, Vikhroli East, Mumbai', url: 'https://www.google.com/maps/search/?api=1&query=MICL+Aaradhya+Eastwind%2C+Vikhroli+East%2C+Mumbai' },
+      description: 'A joyful gathering brightened by turmeric, laughter and love.', dressCode: 'Shades of yellow',
+    },
+    {
+      name: 'Sangeet', gujarati: 'સંગીત',
+      date: '2026-12-10', day: 'Thursday', displayDate: '10 December 2026',
+      time: 'To be announced',
+      location: { name: 'Murildhar Hall', address: 'Ghodbunder Road, Thane', url: 'https://www.google.com/maps/search/?api=1&query=Murildhar+Hall%2C+Ghodbunder+Road%2C+Thane' },
+      description: 'A luminous evening of music, stories and joyful dance.', dressCode: 'Festive jewel tones',
+    },
+    {
+      name: 'Wedding', gujarati: 'લગ્ન',
+      date: '2026-12-11', day: 'Friday', displayDate: '11 December 2026',
+      time: '6:30 PM onwards',
+      location: { name: 'Blue Bell Lawn', address: 'Ghodbunder Road, Thane', url: 'https://www.google.com/maps/search/?api=1&query=Blue+Bell+Lawn%2C+Ghodbunder+Road%2C+Thane' },
+      description: 'Join us as two journeys become one.', dressCode: 'Indian formal',
+    },
+  ],
 }
