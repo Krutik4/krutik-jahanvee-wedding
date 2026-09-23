@@ -6,13 +6,67 @@ import { ScrollSmoother } from 'gsap/ScrollSmoother'
 import { Howl } from 'howler'
 import { wedding } from './data/wedding'
 import './styles.css'
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
 
-const Motif = ({ className = '' }) => <svg className={`motif ${className}`} viewBox="0 0 240 56" aria-hidden="true"><path d="M5 28C35 4 50 4 80 28s45 24 75 0 45-24 80 0" fill="none" stroke="currentColor" strokeWidth="1"/><path d="M42 24c0 18 16 18 16 0M120 24c0 18 16 18 16 0M198 24c0 18 16 18 16 0" fill="none" stroke="currentColor"/><circle cx="50" cy="44" r="4"/><circle cx="128" cy="44" r="4"/><circle cx="206" cy="44" r="4"/></svg>
-const Diya = ({className=''}) => <span className={`diya ${className}`}><i/></span>
-function Countdown(){ const [left,setLeft]=useState({}); useEffect(()=>{const tick=()=>{let d=Math.max(0,new Date(wedding.date)-Date.now()); setLeft({Days:Math.floor(d/864e5),Hours:Math.floor(d/36e5)%24,Minutes:Math.floor(d/6e4)%60,Seconds:Math.floor(d/1e3)%60})};tick();let t=setInterval(tick,1000);return()=>clearInterval(t)},[]); return <div className="countdown" aria-label="Countdown to wedding">{Object.entries(left).map(([k,v])=><div key={k}><b>{String(v).padStart(2,'0')}</b><small>{k}</small></div>)}</div> }
-function ScratchCard(){const ref=useRef();const [done,setDone]=useState(false); useEffect(()=>{let c=ref.current,ctx=c.getContext('2d'),draw=false,last; const size=()=>{let r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;ctx.scale(d,d);ctx.globalCompositeOperation='source-over';let g=ctx.createLinearGradient(0,0,r.width,r.height);g.addColorStop(0,'#a9742a');g.addColorStop(.5,'#e2b866');g.addColorStop(1,'#6c3519');ctx.fillStyle=g;ctx.fillRect(0,0,r.width,r.height);ctx.fillStyle='rgba(255,246,212,.55)';ctx.font='14px serif';ctx.textAlign='center';ctx.fillText('SCRATCH WITH LOVE',r.width/2,r.height/2)}; size();addEventListener('resize',size); const point=e=>{let r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top}};const scratch=e=>{if(!draw)return;e.preventDefault();let p=point(e);ctx.globalCompositeOperation='destination-out';ctx.lineWidth=38;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(last.x,last.y);ctx.lineTo(p.x,p.y);ctx.stroke();last=p;let a=ctx.getImageData(0,0,c.width,c.height).data,clear=0;for(let i=3;i<a.length;i+=80)if(a[i]<20)clear++;if(clear/(a.length/80)>.32){ctx.clearRect(0,0,c.width,c.height);setDone(true)}};const start=e=>{draw=true;last=point(e)};const end=()=>draw=false;c.addEventListener('pointerdown',start);c.addEventListener('pointermove',scratch);addEventListener('pointerup',end);return()=>{removeEventListener('resize',size);c.removeEventListener('pointerdown',start);c.removeEventListener('pointermove',scratch);removeEventListener('pointerup',end)}},[]);return <section className={`reveal ${done?'revealed':''}`} aria-labelledby="date-title"><div className="invite-card"><p className="eyebrow">A date to remember</p><Motif/><h2 id="date-title">11 <em>December</em> 2026</h2><p className="couple-line">{wedding.couple}</p><canvas ref={ref} aria-label="Scratch to reveal wedding date" role="img"/><span className="scratch-hint">{done?'With love, revealed':'Touch and scratch to reveal'}</span></div><Countdown/></section>}
-function TempleScene(){const root=useRef();useEffect(()=>{const el=root.current,reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;if(reduce)return;let ctx=gsap.context(()=>{let tl=gsap.timeline({scrollTrigger:{trigger:el,start:'top top',end:'+=180%',scrub:1,pin:true,anticipatePin:1}});tl.fromTo('.temple',{opacity:.2,scale:.86},{opacity:1,scale:1,duration:1}).to('.doors .left',{xPercent:-94,duration:1},.8).to('.doors .right',{xPercent:94,duration:1},.8).to('.temple',{scale:1.18,yPercent:5,duration:1},1.3);},el);return()=>ctx.revert()},[]);return <section ref={root} className="temple-world" aria-label="A journey through the temple"><div className="stars">✦　·　✦　·　✦</div><div className="toran"><Motif/></div><div className="temple"><div className="shikhara">✦</div><div className="arch"/><div className="pillar p1"/><div className="pillar p2"/><div className="doors"><div className="door left"/><div className="door right"/></div></div><div className="scene-diyas"><Diya/><Diya/><Diya/><Diya/></div></section>}
-function Events(){return <section className="events" id="journey"><header><p className="eyebrow">The wedding journey</p><h2>Our <em>celebrations</em></h2></header><ol>{wedding.events.map((event)=><li key={`${event.date}-${event.name}`}><div className="event-date"><b>{event.displayDate.slice(0,2)}</b><span>{event.displayDate.slice(3)}</span></div><article><p className="eyebrow">{event.day} · {event.gujarati}</p><h3>{event.name}</h3><p>{event.description}</p><footer><span>{event.time}</span><a href={event.location.url} target="_blank" rel="noreferrer">{event.location.name} ↗</a></footer><small>{event.location.address} · Dress code: {event.dressCode}</small></article></li>)}</ol></section>}
-function Music(){const [on,setOn]=useState(false);let sound=useRef();useEffect(()=>()=>sound.current?.unload(),[]);const toggle=()=>{if(!sound.current)sound.current=new Howl({src:[wedding.music],loop:true,volume:0,onloaderror:()=>setOn(false)});if(on){sound.current.fade(.28,0,350);setTimeout(()=>sound.current.pause(),350);setOn(false)}else{sound.current.play();sound.current.fade(0,.28,600);setOn(true)}};return <button className={`music ${on?'playing':''}`} onClick={toggle} aria-pressed={on}><i/><i/><i/> <span>Music {on?'on':'off'}</span></button>}
-function App(){useEffect(()=>{const desktop=matchMedia('(min-width: 768px)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches; const smoother=desktop ? ScrollSmoother.create({wrapper:'#smooth-wrapper',content:'#smooth-content',smooth:0.7,effects:false,normalizeScroll:true}) : null; let started=false;const start=()=>{if(!started){started=true;document.documentElement.classList.add('entered')}};addEventListener('scroll',start,{once:true,passive:true});return()=>{removeEventListener('scroll',start);smoother?.kill()}},[]);return <><Music/><div id="smooth-wrapper"><main id="smooth-content"><section className="hero"><div className="hero-particles">✦　·　✦　·　✦</div><Motif/><p className="invocation">{wedding.invocation}</p><h1><span>Krutik</span><i>&</i><span>Jahanvee</span></h1><p className="hero-date">11 · 12 · 2026</p><div className="hero-diyas"><Diya/><Diya/></div><a href="#temple" className="enter">Scroll to enter <b>↓</b></a></section><div id="temple"><TempleScene/></div><ScratchCard/><Events/><section className="closing"><Motif/><p className="eyebrow">With the blessings of our families</p><h2>Come, celebrate<br/><em>love with us.</em></h2><p>{wedding.location.name}<br/>{wedding.location.address}</p><div><a className="button" href={wedding.location.url} target="_blank" rel="noreferrer">Get directions</a><a className="text-link" href={wedding.rsvp.whatsapp} target="_blank" rel="noreferrer">RSVP via WhatsApp ↗</a></div></section></main></div></>}; createRoot(document.getElementById('root')).render(<App/>)
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+const decorAsset = (file) => `${import.meta.env.BASE_URL}assets/decor/${file}`
+
+function Ornament({ asset, className, alt = '' }) {
+  return <img className={`ornament ${className}`} src={asset} alt={alt} onError={(event) => { event.currentTarget.hidden = true }} />
+}
+function Diya() { return <span className="diya" aria-hidden="true"><i /></span> }
+function Countdown() {
+  const [left, setLeft] = useState({})
+  useEffect(() => {
+    const tick = () => {
+      const ms = Math.max(0, new Date(wedding.date) - Date.now())
+      setLeft({ Days: Math.floor(ms / 864e5), Hours: Math.floor(ms / 36e5) % 24, Minutes: Math.floor(ms / 6e4) % 60, Seconds: Math.floor(ms / 1e3) % 60 })
+    }
+    tick(); const timer = setInterval(tick, 1000)
+    return () => clearInterval(timer)
+  }, [])
+  return <div className="countdown" aria-label="Countdown to wedding">{Object.entries(left).map(([label, value]) => <div key={label}><b>{String(value).padStart(2, '0')}</b><small>{label}</small></div>)}</div>
+}
+function ScratchCard() {
+  const canvasRef = useRef(); const [done, setDone] = useState(false)
+  useEffect(() => {
+    const canvas = canvasRef.current; const context = canvas.getContext('2d'); let drawing = false; let lastPoint
+    const paint = () => { const box = canvas.getBoundingClientRect(); const dpr = devicePixelRatio || 1; canvas.width = box.width * dpr; canvas.height = box.height * dpr; context.setTransform(dpr, 0, 0, dpr, 0, 0); const gradient = context.createLinearGradient(0, 0, box.width, box.height); gradient.addColorStop(0, '#9c6428'); gradient.addColorStop(.5, '#e8c46f'); gradient.addColorStop(1, '#69321e'); context.globalCompositeOperation = 'source-over'; context.fillStyle = gradient; context.fillRect(0, 0, box.width, box.height); context.fillStyle = 'rgba(255,246,212,.6)'; context.font = '12px serif'; context.textAlign = 'center'; context.fillText('TOUCH TO REVEAL', box.width / 2, box.height / 2) }
+    const point = (event) => { const rect = canvas.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top } }
+    const scratch = (event) => { if (!drawing) return; const current = point(event); context.globalCompositeOperation = 'destination-out'; context.lineWidth = 38; context.lineCap = 'round'; context.beginPath(); context.moveTo(lastPoint.x, lastPoint.y); context.lineTo(current.x, current.y); context.stroke(); lastPoint = current; const alpha = context.getImageData(0, 0, canvas.width, canvas.height).data; let clear = 0; for (let i = 3; i < alpha.length; i += 80) if (alpha[i] < 20) clear++; if (clear / (alpha.length / 80) > .32) { context.clearRect(0, 0, canvas.width, canvas.height); setDone(true) } }
+    paint(); addEventListener('resize', paint); canvas.addEventListener('pointerdown', (event) => { drawing = true; lastPoint = point(event) }); canvas.addEventListener('pointermove', scratch); addEventListener('pointerup', () => { drawing = false })
+    return () => removeEventListener('resize', paint)
+  }, [])
+  return <section className="reveal"><div className="invite-card"><p className="eyebrow">A date to remember</p><h2>11 <em>December</em> 2026</h2><p>{wedding.couple}</p><canvas ref={canvasRef} aria-label="Scratch to reveal wedding date" role="img" /><span>{done ? 'With love, revealed' : 'Touch and scratch to reveal'}</span></div><Countdown /></section>
+}
+function TempleScene() {
+  const sceneRef = useRef()
+  useEffect(() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const context = gsap.context(() => {
+      const timeline = gsap.timeline({ scrollTrigger: { trigger: sceneRef.current, start: 'top top', end: '+=180%', scrub: 1, pin: true, anticipatePin: 1 } })
+      timeline.fromTo('.temple', { opacity: .3, scale: .9 }, { opacity: 1, scale: 1, duration: .8 })
+        .from('.scroll-ornament', { opacity: 0, y: 70, stagger: .12, duration: .8 }, .15)
+        .to('.doors .left', { xPercent: -94, duration: 1 }, .75).to('.doors .right', { xPercent: 94, duration: 1 }, .75)
+        .from('.scene-names', { opacity: 0, y: 36, scale: .95, duration: .7 }, 1.45)
+    }, sceneRef)
+    return () => context.revert()
+  }, [])
+  const decor = wedding.decor
+  return <section ref={sceneRef} className="temple-world" aria-label="A journey through the temple">
+    <div className="lantern-row" aria-hidden="true">{[0, 1, 2, 3].map((index) => <Ornament key={index} asset={decorAsset(decor.lantern)} className={`lantern lantern-${index + 1}`} />)}</div>
+    <Ornament asset={decorAsset(decor.lotusLeft)} className="scroll-ornament lotus lotus-left" />
+    <Ornament asset={decorAsset(decor.lotusRight)} className="scroll-ornament lotus lotus-right" />
+    <Ornament asset={decorAsset(decor.leafLeft)} className="scroll-ornament leaf leaf-left" />
+    <Ornament asset={decorAsset(decor.flowerLeft)} className="scroll-ornament flower flower-left" />
+    <Ornament asset={decorAsset(decor.flowerRight)} className="scroll-ornament flower flower-right" />
+    <Ornament asset={decorAsset(decor.peacockLeft)} className="scroll-ornament peacock peacock-left" alt="Decorative peacock" />
+    <Ornament asset={decorAsset(decor.peacockRight)} className="scroll-ornament peacock peacock-right" alt="Decorative peacock" />
+    <div className="temple"><div className="shikhara">✦</div><div className="arch" /><div className="doors"><div className="door left" /><div className="door right" /></div></div>
+    <div className="scene-names"><p>{wedding.invocation}</p><h2>{wedding.groom} <i>&</i> {wedding.bride}</h2><span>{wedding.dateLabel}</span></div>
+    <div className="scene-diyas"><Diya /><Diya /><Diya /><Diya /></div>
+  </section>
+}
+function Events() { return <section className="events"><header><p className="eyebrow">The wedding journey</p><h2>Our <em>celebrations</em></h2></header><ol>{wedding.events.map((event) => <li key={`${event.date}-${event.name}`}><div className="event-date"><b>{event.displayDate.slice(0, 2)}</b><span>{event.displayDate.slice(3)}</span></div><article><p className="eyebrow">{event.day} · {event.gujarati}</p><h3>{event.name}</h3><p>{event.description}</p><footer><span>{event.time}</span><a href={event.location.url} target="_blank" rel="noreferrer">{event.location.name} ↗</a></footer>{event.dressCode && <small>Dress code: {event.dressCode}</small>}<small>{event.location.address}</small></article></li>)}</ol></section> }
+function Music() { const [on, setOn] = useState(false); const sound = useRef(); const toggle = () => { if (!sound.current) sound.current = new Howl({ src: [`${import.meta.env.BASE_URL}${wedding.music}`], loop: true, volume: 0, onloaderror: () => setOn(false) }); if (on) { sound.current.fade(.28, 0, 350); setTimeout(() => sound.current.pause(), 350); setOn(false) } else { sound.current.play(); sound.current.fade(0, .28, 600); setOn(true) } }; return <button className="music" onClick={toggle} aria-pressed={on}>Music {on ? 'on' : 'off'}</button> }
+function App() { return <><Music /><div id="smooth-wrapper"><main id="smooth-content"><section className="hero"><p>{wedding.invocation}</p><h1>Krutik <i>&</i> Jahanvee</h1><span>11 · 12 · 2026</span><a href="#temple">Scroll to enter ↓</a></section><div id="temple"><TempleScene /></div><ScratchCard /><Events /><section className="closing"><p>With the blessings of our families</p><h2>Come, celebrate <em>love with us.</em></h2><p>{wedding.location.name}<br />{wedding.location.address}</p><a href={wedding.location.url} target="_blank" rel="noreferrer">Get directions</a></section></main></div></> }
+createRoot(document.getElementById('root')).render(<App />)
